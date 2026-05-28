@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Skill Gap Analyzer</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body class="bg-soft">
+    <div class="container py-4 py-lg-5">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <div>
+          <h1 class="h3 mb-1">Admin Dashboard</h1>
+          <p class="text-secondary mb-0">Review pending skills/jobs and manage approvals.</p>
+        </div>
+        <div class="d-flex gap-2">
+          <button id="refreshAll" class="btn btn-outline-secondary">Refresh</button>
+          <button id="logoutBtn" class="btn btn-outline-danger">Logout</button>
+        </div>
+      </div>
+
+      <div id="adminFlash" class="alert d-none" role="alert"></div>
+
+      <section class="row g-3 mb-4">
+        <div class="col-12 col-md-4">
+          <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body">
+              <p class="text-secondary mb-2">Total Users</p>
+              <h2 id="statUsers" class="display-6 mb-0">-</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body">
+              <p class="text-secondary mb-2">Total Skills</p>
+              <h2 id="statSkills" class="display-6 mb-0">-</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body">
+              <p class="text-secondary mb-2">Pending Approvals</p>
+              <h2 id="statPending" class="display-6 mb-0">-</h2>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="row g-4">
+        <div class="col-12 col-xl-6">
+          <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+              <h3 class="h5 mb-3">Pending Skills Review</h3>
+              <div class="table-responsive">
+                <table class="table align-middle">
+                  <thead>
+                    <tr>
+                      <th>Skill</th>
+                      <th>Status</th>
+                      <th>User</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="skillsTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-xl-6">
+          <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+              <h3 class="h5 mb-3">Pending Jobs Review</h3>
+              <div class="table-responsive">
+                <table class="table align-middle">
+                  <thead>
+                    <tr>
+                      <th>Job</th>
+                      <th>Status</th>
+                      <th>User</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="jobsTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body">
+          <h3 class="h5 mb-2">User notifications</h3>
+          <p class="text-secondary small mb-3">
+            
+          </p>
+          <div class="row g-2 align-items-end">
+            <div class="col-12 col-md-8">
+              <label for="summaryUserSelect" class="form-label mb-1">User</label>
+              <select id="summaryUserSelect" class="form-select">
+                <option value="">Loading…</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-4 d-grid">
+              <button type="button" id="sendSummaryBtn" class="btn btn-primary" disabled>
+                Send Update to User
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 mb-3">
+            <div>
+              <h3 class="h5 mb-1">Job skill mappings</h3>
+              <p class="text-secondary small mb-0">
+                Required skills per approved job role (stored in <code>job_skills</code>). Use Manage to add, change importance, or remove.
+              </p>
+            </div>
+            <button type="button" id="openMapFromCatalog" class="btn btn-primary btn-sm">
+              Map skills to a role
+            </button>
+          </div>
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">Job role</th>
+                  <th scope="col">Mapped skills</th>
+                  <th scope="col" class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="jobSkillMappingsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="modal fade" id="mapSkillsModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 rounded-4">
+          <div class="modal-header">
+            <h5 class="modal-title" id="mapSkillsModalTitle">Map skills</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div id="mapSkillsRolePickerWrap" class="mb-3">
+              <label for="mapSkillsRoleSelect" class="form-label">Job role</label>
+              <select id="mapSkillsRoleSelect" class="form-select"></select>
+            </div>
+            <hr class="my-3" />
+            <h6 class="text-secondary small text-uppercase mb-2">Current mappings</h6>
+            <div class="table-responsive mb-4">
+              <table class="table table-sm align-middle">
+                <thead>
+                  <tr>
+                    <th>Skill</th>
+                    <th style="min-width: 9rem">Importance</th>
+                    <th class="text-end">Remove</th>
+                  </tr>
+                </thead>
+                <tbody id="mapSkillsCurrentBody"></tbody>
+              </table>
+            </div>
+            <h6 class="text-secondary small text-uppercase mb-2">Add skill</h6>
+            <div class="row g-2 align-items-end">
+              <div class="col-12 col-md-6">
+                <label for="mapSkillsAddSelect" class="form-label mb-1">Skill</label>
+                <select id="mapSkillsAddSelect" class="form-select"></select>
+              </div>
+              <div class="col-12 col-md-4">
+                <label for="mapSkillsAddImportance" class="form-label mb-1">Importance</label>
+                <select id="mapSkillsAddImportance" class="form-select">
+                  <option value="High">High</option>
+                  <option value="Medium" selected>Medium</option>
+                  <option value="Low">Low</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-2 d-grid">
+                <button type="button" id="mapSkillsAddBtn" class="btn btn-outline-primary">Add</button>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirm Action</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p id="confirmText" class="mb-0"></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" id="confirmActionBtn" class="btn btn-primary">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script defer src="../js/admin-dashboard.js"></script>
+  </body>
+</html>
+

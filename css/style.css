@@ -1,0 +1,65 @@
+.bg-soft {
+  background: linear-gradient(145deg, #f8fbff 0%, #eef2ff 50%, #f0fdf4 100%);
+  min-height: 100vh;
+}
+
+.result {
+  border-radius: 0.9rem;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  padding: 1rem;
+}
+
+.pill {
+  display: inline-block;
+  margin: 0.2rem 0.35rem 0.2rem 0;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.pill-ok {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.pill-gap {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.pill-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.analysis-skill-list {
+  list-style-type: disc;
+  margin: 0.25rem 0 0;
+  padding-left: 1.35rem;
+}
+
+.analysis-skill-list li::marker {
+  color: #64748b;
+}
+
+.pending-item {
+  padding: 0.8rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.7rem;
+  background: #fff;
+  margin-bottom: 0.7rem;
+}
+
+.pending-meta {
+  color: #6b7280;
+  font-size: 0.8rem;
+  margin: 0.3rem 0 0.6rem;
+}
+
+.ts-wrapper.multi .ts-control > div {
+  background: #e0ecff;
+  border: 1px solid #b6d0ff;
+}
+
