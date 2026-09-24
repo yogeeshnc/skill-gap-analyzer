@@ -133,6 +133,21 @@
               Map skills to a role
             </button>
           </div>
+          <div class="row g-2 align-items-end mb-3">
+            <div class="col-12 col-md-8">
+              <label for="jobSkillMappingSearch" class="form-label mb-1">Search jobs or skills</label>
+              <input
+                type="search"
+                id="jobSkillMappingSearch"
+                class="form-control"
+                placeholder="Search by job role or skill"
+                autocomplete="off"
+              />
+            </div>
+            <div class="col-12 col-md-4">
+              <div id="jobSkillMappingCount" class="text-secondary small pb-2" aria-live="polite"></div>
+            </div>
+          </div>
           <div class="table-responsive">
             <table class="table align-middle mb-0">
               <thead>

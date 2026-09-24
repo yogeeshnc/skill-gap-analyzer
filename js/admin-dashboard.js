@@ -8,6 +8,8 @@ const statPending = document.getElementById("statPending");
 const skillsTableBody = document.getElementById("skillsTableBody");
 const jobsTableBody = document.getElementById("jobsTableBody");
 const jobSkillMappingsBody = document.getElementById("jobSkillMappingsBody");
+const jobSkillMappingSearch = document.getElementById("jobSkillMappingSearch");
+const jobSkillMappingCount = document.getElementById("jobSkillMappingCount");
 const refreshAll = document.getElementById("refreshAll");
 const logoutBtn = document.getElementById("logoutBtn");
 const openMapFromCatalog = document.getElementById("openMapFromCatalog");
@@ -34,6 +36,7 @@ let jobRolesCatalog = [];
 let jobSkillMappings = [];
 let mapModalRoleLocked = false;
 let mapModalSelectedRoleId = null;
+const mappingDisplayLimit = 8;
 
 if (!token) {
   window.location.href = "admin-login.html";
@@ -170,18 +173,34 @@ function renderTable(tbody, items, type) {
 }
 
 function renderJobSkillMappingsOverview() {
-  const rolesFromCatalog = jobRolesCatalog.map((r) => ({
-    roleId: r.id,
-    roleName: r.name,
-    skills: jobSkillMappings.filter((m) => m.roleId === r.id),
-  }));
+  const searchTerm = jobSkillMappingSearch.value.trim().toLowerCase();
+  const rolesFromCatalog = jobRolesCatalog
+    .map((r) => ({
+      roleId: r.id,
+      roleName: r.name,
+      skills: jobSkillMappings.filter((m) => m.roleId === r.id),
+    }))
+    .filter((group) => group.skills.length > 0)
+    .filter((group) => {
+      if (!searchTerm) return true;
+      return (
+        group.roleName.toLowerCase().includes(searchTerm) ||
+        group.skills.some((skill) => skill.skillName.toLowerCase().includes(searchTerm))
+      );
+    });
 
   if (!rolesFromCatalog.length) {
-    jobSkillMappingsBody.innerHTML = `<tr><td colspan="3" class="text-secondary">No job roles in catalog yet.</td></tr>`;
+    jobSkillMappingCount.textContent = "0 mapped jobs";
+    jobSkillMappingsBody.innerHTML = `<tr><td colspan="3" class="text-secondary">No matching job skill mappings found.</td></tr>`;
     return;
   }
 
-  jobSkillMappingsBody.innerHTML = rolesFromCatalog
+  const visibleRoles = rolesFromCatalog.slice(0, mappingDisplayLimit);
+  jobSkillMappingCount.textContent = searchTerm
+    ? `Showing ${visibleRoles.length} of ${rolesFromCatalog.length} matching jobs`
+    : `Showing ${visibleRoles.length} of ${rolesFromCatalog.length} mapped jobs`;
+
+  jobSkillMappingsBody.innerHTML = visibleRoles
     .map((group) => {
       const chips =
         group.skills.length === 0
@@ -481,6 +500,8 @@ mapSkillsCurrentBody.addEventListener("click", async (e) => {
 openMapFromCatalog.addEventListener("click", () => {
   openMapSkillsModal({ lockRole: false });
 });
+
+jobSkillMappingSearch.addEventListener("input", renderJobSkillMappingsOverview);
 
 mapSkillsModalEl.addEventListener("hidden.bs.modal", () => {
   mapModalRoleLocked = false;
